@@ -1,6 +1,6 @@
 # threejs-3d-sound-sandbox
 
-[See Demo](https://munshkr.github.io/threejs-3d-sound-sandbox)
+[See Demo](https://munshkr.github.io/threejs-3d-sound-sandbox/)
 
 Testing filters on a ThreeJS PositionalAudio object (WebAudio Panner wrapper),
 to get a richer 3D sound simulation.
