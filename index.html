@@ -78,7 +78,7 @@
 					audioLoader.load( 'sounds/cipater-sample.ogg', function ( buffer ) {
 
 							sound1.setBuffer( buffer );
-              sound1.setDistanceModel("inverse")
+              sound1.setDistanceModel("inverse");
               sound1.setRefDistance(20);
               sound1.setRolloffFactor(2);
               sound1.setVolume(1);
@@ -191,8 +191,6 @@
 
           // Update filter control to show change
           filterControls.frequency = filter1.frequency;
-
-          console.log("Filter Frequency:", filter1.frequency);
       }
 
 			function onWindowResize() {

@@ -46,13 +46,11 @@ export default class PositionalAudioFilter {
     }
 
     set gain(value) {
-        console.log("set gain", value);
         this.filter.gain.setValueAtTime(value,
             this.positionalAudio.context.currentTime);
     }
 
     connect() {
-        console.log("connect filter");
         this.positionalAudio.setFilter(this.filter);
     }
 
@@ -67,17 +65,32 @@ export default class PositionalAudioFilter {
 
         const distance = camera.position.distanceTo(mesh.position);
 
-        const refDistance = this.positionalAudio.getRefDistance();
-        const rolloffFactor = this.positionalAudio.getRolloffFactor();
+        const value = this._calculateValue(distance);
 
-        // Use "inverse" model
-        // FIXME: Use the corresponding distance model based on positionalAudio
-        const value = refDistance / (refDistance + rolloffFactor * (Math.max(distance, refDistance) - refDistance));
+        if (isNaN(value)) return;
 
         // Rescale value using min/max freq
         const { minFreq, maxFreq } = this;
         const scaledValue = value * (maxFreq - minFreq) + minFreq;
 
-        this.filter.frequency.setValueAtTime(scaledValue, this.positionalAudio.context.currentTime);
+        this.filter.frequency.setValueAtTime(scaledValue, positionalAudio.context.currentTime);
+    }
+
+    _calculateValue(distance) {
+        const { positionalAudio } = this;
+        const distanceModel = positionalAudio.getDistanceModel();
+        const refDistance = positionalAudio.getRefDistance();
+        const rolloffFactor = positionalAudio.getRolloffFactor();
+
+        switch (distanceModel) {
+          case 'linear':
+            const maxDistance = positionalAudio.getMaxDistance();
+            return 1 - rolloffFactor * (distance - refDistance) / (maxDistance - refDistance);
+          case 'inverse':
+            return refDistance / (refDistance + rolloffFactor * (Math.max(distance, refDistance) - refDistance));
+
+          case 'exponential':
+            return Math.pow(Math.max(distance, refDistance) / refDistance, -rolloffFactor);
+        }
     }
 }
